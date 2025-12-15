@@ -15,6 +15,7 @@ from telescope.serializers.connection import (
     ClickhouseConnectionSerializer,
     DockerConnectionSerializer,
     KubernetesConnectionSerializer,
+    StarrocksConnectionSerializer
 )
 
 
@@ -72,6 +73,8 @@ class ConnectionService:
                 data_serializer_cls = DockerConnectionSerializer
             elif kind == "kubernetes":
                 data_serializer_cls = KubernetesConnectionSerializer
+            elif kind == "starrocks":
+                data_serializer_cls = StarrocksConnectionSerializer
             data_serializer = data_serializer_cls(data=serializer.data["data"])
             if not data_serializer.is_valid(raise_exception=raise_is_valid):
                 raise SerializerValidationError(data_serializer)
@@ -105,6 +108,8 @@ class ConnectionService:
                 data_serializer_cls = DockerConnectionSerializer
             elif conn.kind == "kubernetes":
                 data_serializer_cls = KubernetesConnectionSerializer
+            elif conn.kind == "starrocks":
+                data_serializer_cls = StarrocksConnectionSerializer
             data_serializer = data_serializer_cls(data=serializer.data["data"])
 
             if not data_serializer.is_valid(raise_exception=raise_is_valid):
