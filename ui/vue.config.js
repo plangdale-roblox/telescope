@@ -10,8 +10,10 @@ module.exports = defineConfig({
     devServer: {
         client: false,
         webSocketServer: false,
-        proxy: 'http://127.0.0.1:8000',
+        proxy: 'http://127.0.0.1:8008',
         historyApiFallback: true,
+        hot: true,
+        liveReload: true,
     },
     configureWebpack: {
         plugins: [
