@@ -20,7 +20,7 @@ from telescope.utils import (
     convert_to_base_ch,
 )
 
-SUPPORTED_KINDS = {"clickhouse", "docker", "kubernetes"}
+SUPPORTED_KINDS = {"clickhouse", "starrocks", "docker", "kubernetes"}
 
 
 class SerializeErrorMsg:
@@ -138,6 +138,23 @@ class ClickhouseConnectionSerializer(serializers.Serializer):
     server_hostname = serializers.CharField(allow_blank=True)
     alt_hosts = serializers.CharField(allow_blank=True)
 
+class StarrocksConnectionSerializer(serializers.Serializer):
+    host = serializers.CharField()
+    port = serializers.IntegerField()
+    user = serializers.CharField()
+    password = serializers.CharField(allow_blank=True)
+    catalog = serializers.CharField()
+    database = serializers.CharField()
+    table = serializers.CharField()
+    ssl = serializers.BooleanField()
+    verify = serializers.BooleanField()
+    ca_cert = serializers.CharField(allow_blank=True)
+    certfile = serializers.CharField(allow_blank=True)
+    keyfile = serializers.CharField(allow_blank=True)
+    ssl_version = serializers.CharField(allow_blank=True)
+    ciphers = serializers.CharField(allow_blank=True)
+    server_hostname = serializers.CharField(allow_blank=True)
+    alt_hosts = serializers.CharField(allow_blank=True)
 
 class DockerConnectionSerializer(serializers.Serializer):
     address = serializers.CharField()
@@ -173,6 +190,11 @@ class GetSourceSchemaClickhouseSerializer(serializers.Serializer):
     database = serializers.CharField()
     table = serializers.CharField()
 
+class GetSourceSchemaStarrocksSerializer(serializers.Serializer):
+    connection_id = serializers.IntegerField()
+    catalog = serializers.CharField()
+    database = serializers.CharField()
+    table = serializers.CharField()
 
 class GetSourceSchemaDockerSerializer(serializers.Serializer):
     connection_id = serializers.IntegerField()
@@ -284,8 +306,9 @@ class NewBaseSourceSerializer(serializers.Serializer):
         if not value:
             raise ValueError(SerializeErrorMsg.EMPTY_COLUMN)
 
+        # TODO: support StarRocks time field type validation
         column_type = convert_to_base_ch(
-            data["columns"].get(value, {}).get("type", "").lower()
+            data["colums"].get(value, {}).get("type", "").lower()
         )
 
         if column_type not in ALLOWED_TIME_COLUMN_TYPES:
@@ -298,7 +321,7 @@ class NewBaseSourceSerializer(serializers.Serializer):
         errors = {}
 
         if value:
-
+            # TODO: support StarRocks date field type validation
             column_type = convert_to_base_ch(
                 data["columns"].get(value, {}).get("type", "").lower()
             )
@@ -332,6 +355,12 @@ class NewBaseSourceSerializer(serializers.Serializer):
 
 
 class ClickhouseSourceDataSerializer(serializers.Serializer):
+    database = serializers.CharField(required=True)
+    table = serializers.CharField(required=True)
+    settings = serializers.CharField(required=False, allow_blank=True, allow_null=True)
+
+class StarrocksSourceDataSerializer(serializers.Serializer):
+    catalog = serializers.CharField(required=True)
     database = serializers.CharField(required=True)
     table = serializers.CharField(required=True)
     settings = serializers.CharField(required=False, allow_blank=True, allow_null=True)
@@ -404,6 +433,19 @@ class UpdateClickhouseSourceSerializer(NewClickhouseSourceSerializer):
     def validate_slug(self, value):
         return value
 
+
+class NewStarrocksSourceSerializer(NewBaseSourceSerializer):
+    data = StarrocksSourceDataSerializer(required=True)
+
+
+class UpdateStarrocksSourceSerializer(NewStarrocksSourceSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.required = False
+
+    def validate_slug(self, value):
+        return value
 
 class SourceCreateResponseSerializer(serializers.Serializer):
     slug = serializers.SlugField(max_length=64, required=True)
