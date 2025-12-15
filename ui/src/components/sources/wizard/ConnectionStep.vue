@@ -198,6 +198,7 @@ const filteredConnections = computed(() => {
 
 // Initialize form fields from props
 const connection = ref(preselectedConnection.value || null)
+const catalog = ref(props.modelValue?.catalog || 'default_catalog')
 const database = ref(props.modelValue?.database || '')
 const table = ref(props.modelValue?.table || '')
 const settings = ref(props.modelValue?.settings || '')
@@ -210,6 +211,7 @@ const connectionCache = ref({})
 // Initialize cache with current values if editing
 if (preselectedConnection.value) {
     connectionCache.value[preselectedConnection.value.id] = {
+        catalog: props.modelValue?.catalog || 'default_catalog',
         database: props.modelValue?.database || '',
         table: props.modelValue?.table || '',
         settings: props.modelValue?.settings || '',
@@ -226,7 +228,7 @@ const handleConnectionChange = () => {
 
     // Save current values to cache for the previous connection
     const previousConnectionId = Object.keys(connectionCache.value).find(
-        (id) => connectionCache.value[id] && (database.value !== '' || table.value !== '' || namespace.value !== ''),
+        (id) => connectionCache.value[id] && (catalog.value !== '' || database.value !== '' || table.value !== '' || namespace.value !== ''),
     )
 
     // Check if we have cached values for the new connection
@@ -234,12 +236,14 @@ const handleConnectionChange = () => {
 
     if (cached) {
         // Restore cached values
+        catalog.value = cached.catalog || 'default_catalog'
         database.value = cached.database || ''
         table.value = cached.table || ''
         settings.value = cached.settings || ''
         namespace.value = cached.namespace || ''
     } else {
         // Clear fields for new connection
+        catalog.value = 'default_catalog'
         database.value = ''
         table.value = ''
         settings.value = ''
@@ -254,6 +258,7 @@ const handleConnectionChange = () => {
 watch([database, table, settings, namespace], () => {
     if (connection.value) {
         connectionCache.value[connection.value.id] = {
+            catalog: catalog.value,
             database: database.value,
             table: table.value,
             settings: settings.value,
@@ -315,6 +320,7 @@ const handleNext = () => {
     if (validate()) {
         const values = {
             connection: connection.value,
+            catalog: catalog.value,
             database: database.value,
             table: table.value,
             settings: settings.value,
