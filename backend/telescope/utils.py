@@ -148,7 +148,31 @@ CLICKHOUSE_TYPES: List[str] = [
     "boolean",
 ]
 
-STARROCKS_TYPES: List[str] = CLICKHOUSE_TYPES
+STARROCKS_TYPES: List[str] = [
+    "string",
+    "varchar",
+    "char",
+    "binary",
+    "varbinary",
+    "bool",
+    "boolean",
+    "int",
+    "tinyint",
+    "smallint",
+    "bigint",
+    "largeint",
+    "float",
+    "double",
+    "decimal",
+    "date",
+    "datetime",
+    "bitmap",
+    "hll",
+    "json",
+    "array",
+    "map",
+    "struct",
+]
 
 ALLOWED_TIME_FIELD_TYPES: List[str] = [
     "datetime",
