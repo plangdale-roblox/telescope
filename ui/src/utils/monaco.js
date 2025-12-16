@@ -96,6 +96,7 @@ function initMonacoSetup() {
     monaco.languages.register({ id: 'fields' })
     monaco.languages.setLanguageConfiguration('fields', {
         autoClosingPairs: [{ open: '(', close: ')' }],
+        wordPattern: /([^\`\~\!\$\^\&\*\(\)\=\+\[\{\]\}\\\|\;\:\'\"\,\<\>\/\s]+)/g
     })
     monaco.languages.registerDocumentSemanticTokensProvider('fields', {
         getLegend: () => ({
@@ -117,6 +118,9 @@ function initMonacoSetup() {
     })
 
     monaco.languages.register({ id: 'flyql' })
+    monaco.languages.setLanguageConfiguration('flyql', {
+        wordPattern: /([^\`\~\!\$\^\&\*\(\)\=\+\[\{\]\}\\\|\;\:\'\"\,\<\>\/\s]+)/g
+    })
     monaco.languages.registerDocumentSemanticTokensProvider('flyql', {
         getLegend: () => ({
             tokenTypes: flyqlTokenTypes,
