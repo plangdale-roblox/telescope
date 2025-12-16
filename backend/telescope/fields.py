@@ -110,6 +110,7 @@ class Char:
             or self.value == DOT
             or self.value == COLON
             or self.value == SLASH
+            or self.value == '@'
         )
 
     def is_modifier_argument_value(self):
