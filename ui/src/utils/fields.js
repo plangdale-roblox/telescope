@@ -1,5 +1,6 @@
 import { isNumeric } from '@/utils/utils.js'
 
+const AT = '@'
 const DOT = '.'
 const DOUBLE_QUOTE = '"'
 const SINGLE_QUOTE = "'"
@@ -18,6 +19,7 @@ const NEWLINE = '\n'
 const VALID_ALIAS_OPERATOR = 'as'
 
 const CHARS = {
+    AT,
     DOT,
     DOUBLE_QUOTE,
     SINGLE_QUOTE,
@@ -133,7 +135,8 @@ class Char {
             this.value === UNDERSCORE ||
             this.value === DOT ||
             this.value === COLON ||
-            this.value === SLASH
+            this.value === SLASH ||
+            this.value === AT
         )
     }
     isModifierArgumentValue() {
