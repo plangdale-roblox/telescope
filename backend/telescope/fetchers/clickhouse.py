@@ -60,7 +60,7 @@ def build_time_clause(time_field, date_field, time_from, time_to):
     date_clause = ""
     if date_field:
         date_clause = f"{date_field} BETWEEN toDate(fromUnixTimestamp64Milli({time_from})) and toDate(fromUnixTimestamp64Milli({time_to})) AND "
-    return f"{date_clause}{time_field} BETWEEN fromUnixTimestamp64Milli({time_from}) and fromUnixTimestamp64Milli({time_to})"
+    return f"{date_clause}`{time_field}` BETWEEN fromUnixTimestamp64Milli({time_from}) and fromUnixTimestamp64Milli({time_to})"
 
 
 class ClickhouseConnect:
@@ -311,9 +311,9 @@ class Fetcher(BaseFetcher):
         )
         to_time_zone = ""
         if time_field_type in ["datetime", "datetime64"]:
-            to_time_zone = f"toTimeZone({request.source.time_field}, 'UTC')"
+            to_time_zone = f"toTimeZone(`{request.source.time_field}`, 'UTC')"
         elif time_field_type in ["timestamp", "uint64", "int64"]:
-            to_time_zone = f"toTimeZone(toDateTime({request.source.time_field}), 'UTC')"
+            to_time_zone = f"toTimeZone(toDateTime(`{request.source.time_field}`), 'UTC')"
 
         fields_names = sorted(request.source._fields.keys())
         fields_to_select = []
@@ -404,7 +404,7 @@ class Fetcher(BaseFetcher):
         else:
             filter_clause = "true"
 
-        order_by_clause = f"ORDER BY {request.source.time_field} DESC"
+        order_by_clause = f"ORDER BY `{request.source.time_field}` DESC"
         raw_where_clause = request.raw_query or "true"
 
         time_clause = build_time_clause(
@@ -425,11 +425,11 @@ class Fetcher(BaseFetcher):
                     request.source._fields[request.source.time_field].type.lower()
                 )
                 if time_field_type in ["datetime", "datetime64"]:
-                    fields_to_select.append(f"toTimeZone({field}, 'UTC')")
+                    fields_to_select.append(f"toTimeZone(`{field}`, 'UTC')")
                 elif time_field_type in ["timestamp", "uint64", "int64"]:
-                    fields_to_select.append(f"toTimeZone(toDateTime({field}), 'UTC')")
+                    fields_to_select.append(f"toTimeZone(toDateTime(`{field}`), 'UTC')")
             else:
-                fields_to_select.append(field)
+                fields_to_select.append(f'`{field}`')
         fields_to_select = ", ".join(fields_to_select)
 
         settings_clause = ""
