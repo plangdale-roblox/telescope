@@ -34,7 +34,7 @@
                                         @click="
                                             updateQuery(
                                                 FlyQLOperator.EQUALS,
-                                                slotProps.data.path.join(':'),
+                                                slotProps.data.path.join('.'),
                                                 slotProps.data.value,
                                             )
                                         "
@@ -47,7 +47,7 @@
                                         @click="
                                             updateQuery(
                                                 FlyQLOperator.NOT_EQUALS,
-                                                slotProps.data.path.join(':'),
+                                                slotProps.data.path.join('.'),
                                                 slotProps.data.value,
                                             )
                                         "
@@ -55,10 +55,10 @@
                                     <span
                                         class="pr-2 cursor-pointer text-xl"
                                         :class="{
-                                            'text-blue-400': selectedColumns.includes(slotProps.data.path.join(':')),
+                                            'text-blue-400': selectedColumns.includes(slotProps.data.path.join('.')),
                                         }"
                                     ></span>
-                                    <span class="font-mono">{{ slotProps.data.path.join(':') }}</span>
+                                    <span class="font-mono">{{ slotProps.data.path.join('.') }}</span>
                                 </template>
                             </Column>
                             <Column field="value" header="VALUE" sortable>

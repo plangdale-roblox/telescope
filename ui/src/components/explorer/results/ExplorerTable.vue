@@ -154,9 +154,9 @@ const getRowValue = (column, data) => {
     if (column.jsonstring) {
         // explorer contains object
         value = extractJsonPath(column, data)
-    } else if (column.name.includes(':')) {
+    } else if (column.name.includes('.')) {
         if (Array.isArray(data[column.root_name])) {
-            const index = Number(column.name.split(':')[1])
+            const index = Number(column.name.split('.')[1])
             value = data[column.root_name][index]
         } else {
             value = extractJsonPath(column, data)
@@ -189,15 +189,25 @@ const getRowValueLength = (column, data) => {
 }
 
 const extractJsonPath = (column, data) => {
-    const path = column.name.split(':')
-    let value = data
-    for (const key of path) {
-        if (typeof value === 'object' && key in value) {
-            value = value[key]
-        } else {
-            return undefined
+    // Helper function to recursively extract path with dot-aware key matching
+    const extractPath = (path, obj) => {
+        if (!path) return obj
+        if (typeof obj !== 'object' || obj === null) return undefined
+        
+        let candidate = path
+        while (candidate) {
+            if (candidate in obj) {
+                const remainingPath = path.substring(candidate.length + 1)
+                return extractPath(remainingPath, obj[candidate])
+            }
+            // Remove the last dot-separated suffix
+            const lastDot = candidate.lastIndexOf('.')
+            if (lastDot === -1) break
+            candidate = candidate.substring(0, lastDot)
         }
+        return undefined
     }
-    return value
+    
+    return extractPath(column.name, data)
 }
 </script>
