@@ -1,11 +1,22 @@
 gunicorn:
   bind: 0.0.0.0:9898
+  max_requests: 50
+  max_requests_jitter: 50
+  timeout: 120
+  workers: 8
+
 django:
   ALLOWED_HOSTS:
     - "127.0.0.1"
     - "localhost"
+  CSRF_TRUSTED_ORIGINS:
+  - http://localhost:9898
+  - http://localhost:8080
   SECRET_KEY: "local_dev_key_do_not_use_in_production"
   DATABASES:
     default:
       ENGINE: "django.db.backends.sqlite3"
-      NAME: "/db.sqlite3"
+      NAME: "/home/philipl/git/telescope/backend/db.sqlite3"
+auth:
+  enable_testing_auth: true
+  testing_auth_username: telescope
